@@ -23,29 +23,44 @@ bot.on('message', async msg => {
 
         if(msg.content.match(/gert.*ganz leise.*/i)) {
             if(audioPlayer) {
-                audioPlayer.setVolume(0.1);
+                audioPlayer.setVolume(0.05);
+            }
+            return;
+        }
+
+        if(msg.content.match(/gert.*ganz laut.*/i)) {
+            if(audioPlayer) {
+                audioPlayer.setVolume(1.0);
             }
             return;
         }
 
         if(msg.content.match(/gert.*leiser.*/i)) {
             if(audioPlayer) {
-                if (audioPlayer.volume == 0.0) {
-                    return;
-                } else {
-                    audioPlayer.setVolume(audioPlayer.volume - 0.2);
-                }
+                const newVolume = audioPlayer.volume - 0.1;
+                audioPlayer.setVolume(newVolume <= 0.0 ? 0.1 : newVolume);
             }
             return;
         }
 
-        if(msg.content.match(/gert.*lauter.*/i)) {
+        let match = msg.content.match(/gert.*ton.*?(\d+)/i);
+        if(match) {
+            if (match.length <= 1) {
+                await msg.reply("Tas ist falsch. Wie laut?");
+                return;
+            }
+
+            const volume = parseInt(match[1]);
+            console.log(match);
+            if (volume < 0 || volume > 100) {
+                await msg.reply("Tie Zahl muss zwischen 0 und 100 liegen");
+                return;
+            }
+
             if(audioPlayer) {
-                if (audioPlayer.volume == 1.0) {
-                    return;
-                } else {
-                    audioPlayer.setVolume(audioPlayer.volume + 0.2);
-                }
+                console.log("new volume:", volume);
+                audioPlayer.setVolume(volume / 100);
+                await msg.reply("Tie Lautstärke wirt auf " + volume + " gesetzt");
             }
             return;
         }
@@ -55,20 +70,21 @@ bot.on('message', async msg => {
             return;
         }
 
-        let match = msg.content.match(/gert.*spiel.*(http.*)/i);
+        match = msg.content.match(/gert.*spiel.*(http.*)/i);
         if (match) {
             const url = match[1];
             console.log(url);
             if (!msg.member.voice) return;
             const connection = await msg.member.voice.channel.join();
-            audioPlayer = connection.play(ytdl(url, { filter: "audioonly" }));
+            const stream = url.indexOf("youtu") !== -1 ? ytdl(url, { filter: "audioonly" }) : url;
+            audioPlayer = connection.play(stream, { volume: 0.15 });
             await msg.reply('Das spiele ich Ihnen');
             audioPlayer.on("finish", () => audioPlayer = null);
             return;
         }
 
         if (msg.content.match(/gert.*hilfe.*/i)) {
-            await msg.channel.send('Gestatten Sie mir Ihnen zu helfen\nGert sag <text>\nGert hdf\nGert spiel <youtube link>\nGert lauter\nGert leiser\n');
+            await msg.channel.send('Gestatten Sie mir Ihnen zu helfen\nGert sag <text>\nGert hdf\nGert spiel <youtube link>\nGert lauter\nGert leiser\nGert ganz laut\nGert ganz leise\nGert ton <0-100>');
             return;
         }
         match = msg.content.match(/gert.*sag\s(.*)/i);
