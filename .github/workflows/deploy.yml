@@ -3,10 +3,10 @@ on: [push]
 jobs:
 
   build:
-    name: Build
+    name: Gert Deployment
     runs-on: ubuntu-latest
     steps:
-    - name: Deploy Gert
+    - name: Deploy Gert via SSH and Docker
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
@@ -17,4 +17,4 @@ jobs:
         script: |
           cd git/gert
           git pull
-          dcup --build -d
+          docker-compose --build -d
