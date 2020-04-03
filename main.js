@@ -9,52 +9,81 @@ bot.on('ready', () => {
     console.info(`Logged in as ${bot.user.tag}!`);
 });
 
-let dispatcher = null;
-
+let audioPlayer = null;
 bot.on('message', async msg => {
 
+
     try {
+        await msg.react('🍆');
+
         if (msg.content.match(/gert/i)) {
             // msg.reply('Gstottns ma die vorlesung starten zu türfen');
             // await msg.channel.send('stottns ma die vorlesung starten zu türfen');
         }
 
+        if(msg.content.match(/gert.*ganz leise.*/i)) {
+            if(audioPlayer) {
+                audioPlayer.setVolume(0.1);
+            }
+            return;
+        }
+
         if(msg.content.match(/gert.*leiser.*/i)) {
-            if(dispatcher) {
-                if (dispatcher.volume == 0.0) {
+            if(audioPlayer) {
+                if (audioPlayer.volume == 0.0) {
                     return;
                 } else {
-                    dispatcher.setVolume(dispatcher.volume - 0.2);
+                    audioPlayer.setVolume(audioPlayer.volume - 0.2);
                 }
             }
+            return;
         }
 
         if(msg.content.match(/gert.*lauter.*/i)) {
-            if(dispatcher) {
-                if (dispatcher.volume == 1.0) {
+            if(audioPlayer) {
+                if (audioPlayer.volume == 1.0) {
                     return;
                 } else {
-                    dispatcher.setVolume(dispatcher.volume + 0.2);
+                    audioPlayer.setVolume(audioPlayer.volume + 0.2);
                 }
             }
+            return;
         }
 
-        if (msg.content.match(/gert.*hdf/i) && dispatcher) {
-            dispatcher.pause();
+        if (msg.content.match(/gert.*hdf/i) && audioPlayer) {
+            audioPlayer.pause();
+            return;
         }
 
-        const match = msg.content.match(/gert.*spiel.*(http.*)/i);
+        let match = msg.content.match(/gert.*spiel.*(http.*)/i);
         if (match) {
             const url = match[1];
             console.log(url);
             if (!msg.member.voice) return;
             const connection = await msg.member.voice.channel.join();
-            dispatcher = connection.play(ytdl(url, { filter: "audioonly" }));
-            msg.reply('Das spiele ich Ihnen');
-            dispatcher.on("finish", () => dispatcher = null);
+            audioPlayer = connection.play(ytdl(url, { filter: "audioonly" }));
+            await msg.reply('Das spiele ich Ihnen');
+            audioPlayer.on("finish", () => audioPlayer = null);
+            return;
         }
 
-        await msg.react('🍆');
+        if (msg.content.match(/gert.*hilfe.*/i)) {
+            await msg.channel.send('Gestatten Sie mir Ihnen zu helfen\nGert sag <text>\nGert hdf\nGert spiel <youtube link>\nGert lauter\nGert leiser\n');
+            return;
+        }
+        match = msg.content.match(/gert.*sag\s(.*)/i);
+        if (match && match.length >= 2) {
+            console.log(match);
+            await msg.delete();
+            await msg.channel.send(
+                match[1]
+                    .replace(/d/gm, 't').replace(/D/gm, 'T')
+                    .replace(/b/gm, 'p').replace(/B/gm, 'P')
+                    .replace(/r/gm, 'rr').replace(/RR/gm, 'RR')
+            );
+            return;
+        }
+
     } catch(e) {
         console.log("Critical error encountered", e);
     }
