@@ -79,7 +79,7 @@ bot.on('message', async msg => {
                 match[1]
                     .replace(/d/gm, 't').replace(/D/gm, 'T')
                     .replace(/b/gm, 'p').replace(/B/gm, 'P')
-                    .replace(/r/gm, 'rr').replace(/RR/gm, 'RR')
+                    .replace(/r/gm, 'rr').replace(/R/gm, 'RR')
             );
             return;
         }
