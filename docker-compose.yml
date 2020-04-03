@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+    gert:
+        build: .
+        restart: unless-stopped
+        environment:
+            TOKEN: Njk1NjU0NDIwNzYzMTE1NTcy.XodVuQ.JQb0J-wsqVmnufwpOuYHJldMfSI
