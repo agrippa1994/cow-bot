@@ -17,4 +17,4 @@ jobs:
         script: |
           cd git/gert
           git pull
-          docker-compose --build -d
+          /usr/local/bin/docker-compose --build -d
