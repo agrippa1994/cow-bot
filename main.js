@@ -14,7 +14,10 @@ bot.on('message', async msg => {
 
 
     try {
-        // await msg.react('🍆');
+        // random egg plant
+        if (Math.floor(Math.random() * 5) === 0) {
+            await msg.react('🍆');
+        }
 
         if (msg.content.match(/gert/i)) {
             // msg.reply('Gstottns ma die vorlesung starten zu türfen');
