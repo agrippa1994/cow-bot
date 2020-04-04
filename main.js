@@ -14,7 +14,7 @@ bot.on('message', async msg => {
 
 
     try {
-        await msg.react('🍆');
+        // await msg.react('🍆');
 
         if (msg.content.match(/gert/i)) {
             // msg.reply('Gstottns ma die vorlesung starten zu türfen');
