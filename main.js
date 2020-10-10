@@ -1,12 +1,33 @@
 const Discord = require('discord.js');
 const bot = new Discord.Client();
 const cowsay = require("cowsay");
-
+const axios = require('axios');
 const TOKEN = process.env.TOKEN;
+
+async function getRandomPicture() {
+    const randomPage = Math.floor(Math.random() * 160);
+    const result = await axios.get(`https://pixabay.com/api/?key=16292063-99b92de8f1d1cd9b44fa84417&q=cow&image_type=photo&page=${randomPage}&per_page=3`);
+    console.log(result);
+    const randomHit = Math.floor(Math.random() * 3);
+    return result.data.hits[randomHit].largeImageURL;
+}
+
+async function sendCowPicture() {
+    const channel = await bot.channels.fetch('546621672497610755');
+    channel.send('', {files: [await getRandomPicture()]});
+}
 
 bot.login(TOKEN);
 bot.on('ready', () => {
     console.info(`Logged in as ${bot.user.tag}!`);
+
+    setInterval(async () => {
+        try {
+            await sendCowPicture();
+        } catch (e) {
+            console.error(e);
+        }
+    }, 24 * 60 * 60 * 1000);
 });
 
 bot.on('message', async msg => {
@@ -15,7 +36,7 @@ bot.on('message', async msg => {
             await msg.react('🐮');
         }
 
-        const match = msg.content.match(/^cowsay (.+)/);
+        let match = msg.content.match(/^cowsay (.+)/);
         if (match) {
             await msg.delete();
             const response = cowsay.say({
@@ -23,9 +44,14 @@ bot.on('message', async msg => {
             });
             console.log(response);
             await msg.channel.send('```\n' + response + '```');
-
         }
-    } catch(e) {
+
+        match = msg.content.match(/^cowpic/);
+        if (match) {
+            await msg.delete();
+            await sendCowPicture();
+        }
+    } catch (e) {
         console.log("Critical error encountered", e);
     }
 });
