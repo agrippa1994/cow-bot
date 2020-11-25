@@ -4,17 +4,17 @@ const cowsay = require("cowsay");
 const axios = require('axios');
 const TOKEN = process.env.TOKEN;
 
-async function getRandomPicture() {
+async function getRandomPicture(type) {
     const randomPage = Math.floor(Math.random() * 160);
-    const result = await axios.get(`https://pixabay.com/api/?key=16292063-99b92de8f1d1cd9b44fa84417&q=cow&image_type=photo&page=${randomPage}&per_page=3`);
+    const result = await axios.get(`https://pixabay.com/api/?key=16292063-99b92de8f1d1cd9b44fa84417&q=${type}&image_type=photo&page=${randomPage}&per_page=3`);
     console.log(result);
     const randomHit = Math.floor(Math.random() * 3);
     return result.data.hits[randomHit].largeImageURL;
 }
 
-async function sendCowPicture() {
+async function sendPicture(type) {
     const channel = await bot.channels.fetch('546621672497610755');
-    channel.send('', {files: [await getRandomPicture()]});
+    channel.send('', {files: [await getRandomPicture(type)]});
 }
 
 bot.login(TOKEN);
@@ -23,7 +23,7 @@ bot.on('ready', () => {
 
     setInterval(async () => {
         try {
-            await sendCowPicture();
+            await sendPicture('cow');
         } catch (e) {
             console.error(e);
         }
@@ -46,10 +46,10 @@ bot.on('message', async msg => {
             await msg.channel.send('```\n' + response + '```');
         }
 
-        match = msg.content.match(/^cowpic/);
+        match = msg.content.match(/^(\w+)pic/);
         if (match) {
             await msg.delete();
-            await sendCowPicture();
+            await sendPicture(match[1]);
         }
     } catch (e) {
         console.log("Critical error encountered", e);
