@@ -20,7 +20,7 @@ async function sendPicture(type) {
 bot.login(TOKEN);
 bot.on('ready', () => {
     console.info(`Logged in as ${bot.user.tag}!`);
-
+    /*
     setInterval(async () => {
         try {
             await sendPicture('cow');
@@ -28,6 +28,7 @@ bot.on('ready', () => {
             console.error(e);
         }
     }, 24 * 60 * 60 * 1000);
+    */
 });
 
 bot.on('message', async msg => {
