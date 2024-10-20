@@ -1,6 +1,6 @@
-FROM node:12
+FROM node:20-alpine
 
-RUN apt update && apt install -y ffmpeg
+RUN apk add ffmpeg
 
 WORKDIR /usr/share/app
 COPY . .

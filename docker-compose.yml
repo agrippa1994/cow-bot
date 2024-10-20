@@ -1,8 +1,5 @@
-version: '3'
-
 services:
     cow:
-        image: harbor.leitold.solutions/library/cow-bot:1.0.0
         build: .
         restart: unless-stopped
         environment:
