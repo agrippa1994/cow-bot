@@ -2,6 +2,8 @@ services:
     cow:
         build: .
         restart: unless-stopped
+        image: harbor.leitold.solutions/cow-bot/app:latest
+        platform: linux/amd64
         environment:
             TOKEN: ${TOKEN}
 

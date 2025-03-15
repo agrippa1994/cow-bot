@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  cow-bot
+  labels:
+    app:  cow-bot
+spec:
+  selector:
+    matchLabels:
+      app: cow-bot
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  cow-bot
+    spec:
+      containers:
+      - name:  cow-bot
+        image:  harbor.leitold.solutions/cow-bot/app:latest
+        resources: {}
+        env:
+        - name: TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: config
+              key: token
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: config
+type: Opaque
+data:
+  token: {{ .Values.app.token | b64enc }}

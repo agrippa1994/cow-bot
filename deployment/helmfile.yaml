@@ -1,0 +1,7 @@
+releases:
+  - name: cow-bot
+    namespace: cow-bot
+    createNamespace: true
+    chart: ./cow-bot
+    secrets:
+      - app-secrets.yaml
